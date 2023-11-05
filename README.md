@@ -58,4 +58,4 @@ async fn main() -> anyhow::Result<()> {
 ```
 ## License
 
-This project is licensed under [MIT license](https://github.com/64bit/async-gigachat/blob/main/LICENSE).
+This project is licensed under [MIT license](https://github.com/xsayler/async-gigachat/blob/main/LICENSE).
