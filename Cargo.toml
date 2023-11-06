@@ -32,3 +32,4 @@ dotenv = "0.15.0"
 tokio = { version = "1.33.0", features = ["tokio-macros", "macros", "rt-multi-thread"] }
 tracing = "0.1.40"
 tracing-subscriber = "0.3.17"
+tokio-test = "0.4.3"
