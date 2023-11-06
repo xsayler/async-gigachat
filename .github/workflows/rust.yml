@@ -23,5 +23,6 @@ jobs:
         sudo mkdir /usr/local/share/ca-certificates/russian_trusted
         sudo cp certs/russian_trusted_root_ca_pem.crt /usr/local/share/ca-certificates/russian_trusted
         sudo cp certs/russian_trusted_sub_ca_pem.crt /usr/local/share/ca-certificates/russian_trusted
+        sudo update-ca-certificates -v
         export GIGACHAT_AUTH_TOKEN=${{secrets.GIGACHAT_AUTH_TOKEN}}
         cargo test --verbose
