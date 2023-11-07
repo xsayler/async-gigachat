@@ -17,12 +17,12 @@ async fn main() -> anyhow::Result<()> {
 
     let question = ChatMessageBuilder::default()
         .role(Role::User)
-        .content("Hey, how's it going?".into())
+        .content("Hey, how's it going?")
         .build()?;
 
     let request = ChatCompletionRequestBuilder::default()
         .messages(vec![question.clone()])
-        .model("GigaChat:latest".to_owned())
+        .model("GigaChat:latest")
         .build()?;
 
     let response = Chat::new(client).completion(request).await?;

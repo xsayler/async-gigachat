@@ -28,6 +28,7 @@ pub struct ChatCompletionRequest {
 }
 
 #[derive(Builder, Debug, Clone, Serialize, Deserialize)]
+#[builder(setter(into, strip_option))]
 pub struct ChatMessage {
     pub role: Role,
     pub content: String,

@@ -35,13 +35,13 @@ async fn main() -> anyhow::Result<()> {
         messages.push(
             ChatMessageBuilder::default()
                 .role(Role::User)
-                .content(buffer.into())
+                .content(buffer)
                 .build()?,
         );
 
         let request = ChatCompletionRequestBuilder::default()
             .messages(messages.clone())
-            .model("GigaChat:latest".to_owned())
+            .model("GigaChat:latest")
             .build()?;
 
         let response = Chat::new(client.clone()).completion(request).await?;

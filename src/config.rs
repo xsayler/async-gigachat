@@ -48,31 +48,43 @@ impl GigaChatConfigBuilder {
         }
     }
 
-    pub fn auth_token(mut self, token: String) -> Self {
-        self.auth_token = token.into();
+    pub fn auth_token<S>(mut self, token: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.auth_token = Some(token.into());
         self
     }
 
-    pub fn scope(mut self, scope: String) -> Self {
-        self.scope = scope.into();
+    pub fn scope<S>(mut self, scope: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.scope = Some(scope.into());
         self
     }
 
     pub fn with_scope_pers(self) -> Self {
-        self.scope(SCOPE_PERS.to_owned())
+        self.scope(SCOPE_PERS)
     }
 
     pub fn with_scope_corp(self) -> Self {
-        self.scope(SCOPE_CORP.to_owned())
+        self.scope(SCOPE_CORP)
     }
 
-    pub fn auth_url(mut self, url: String) -> Self {
-        self.auth_url = url.into();
+    pub fn auth_url<S>(mut self, url: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.auth_url = Some(url.into());
         self
     }
 
-    pub fn api_base_url(mut self, url: String) -> Self {
-        self.api_base_url = url.into();
+    pub fn api_base_url<S>(mut self, url: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.api_base_url = Some(url.into());
         self
     }
 
