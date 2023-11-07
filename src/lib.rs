@@ -5,9 +5,6 @@
 //! ```
 //! use async_gigachat::{client::Client, config::GigaChatConfig};
 //!
-//! // Loading environment variables from the .env file
-//! dotenv::dotenv().ok();
-//!
 //! // Create a GigaChat client with authorization token from env var GIGACHAT_AUTH_TOKEN with scope env var GIGACHAT_API_SCOPE and default auth url, base url.
 //! let client = Client::new();
 //!
@@ -43,9 +40,6 @@
 //!     client::Client,
 //!     config::GigaChatConfig,
 //! };
-//!
-//! // Loading environment variables from the .env file
-//! dotenv::dotenv().ok();
 //!
 //! // Create client
 //! let client = Client::new();
