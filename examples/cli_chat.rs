@@ -1,14 +1,14 @@
 use std::io::stdin;
 
-use anyhow::Ok;
 use async_gigachat::{
     chat::{Chat, ChatCompletionRequestBuilder, ChatMessage, ChatMessageBuilder, Role},
     client::Client,
     config::GigaChatConfig,
+    result::Result,
 };
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() -> Result<()> {
     dotenv::dotenv().ok();
 
     tracing_subscriber::fmt::init();

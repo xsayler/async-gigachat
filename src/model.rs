@@ -1,7 +1,6 @@
-use anyhow::Result;
 use serde::Deserialize;
 
-use crate::client::Client;
+use crate::{client::Client, result::Result};
 
 #[derive(Deserialize, Debug)]
 pub struct ModelListResponse {

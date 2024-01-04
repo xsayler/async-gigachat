@@ -1,8 +1,7 @@
-use anyhow::Ok;
-use async_gigachat::{client::Client, config::GigaChatConfig, model::Models};
+use async_gigachat::{client::Client, config::GigaChatConfig, model::Models, result::Result};
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() -> Result<()> {
     dotenv::dotenv().ok();
 
     tracing_subscriber::fmt::init();

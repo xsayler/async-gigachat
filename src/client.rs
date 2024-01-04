@@ -1,6 +1,5 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use anyhow::{bail, Result};
 use log::debug;
 use reqwest::Request;
 use serde::{de::DeserializeOwned, Serialize};
@@ -9,6 +8,8 @@ use uuid::Uuid;
 use crate::{
     api::{AccessToken, ErrorResponse},
     config::GigaChatConfig,
+    errors::GigaChatError,
+    result::Result,
 };
 
 #[derive(Clone, Default)]
@@ -22,8 +23,7 @@ impl Client {
     pub fn new() -> Self {
         Client {
             http_client: reqwest::Client::new(),
-            config: GigaChatConfig::default(),
-            access_token: Default::default(),
+            ..Default::default()
         }
     }
 
@@ -31,7 +31,7 @@ impl Client {
         Client {
             http_client: reqwest::Client::new(),
             config,
-            access_token: Default::default(),
+            ..Default::default()
         }
     }
 
@@ -77,8 +77,11 @@ impl Client {
             Ok(_) => (),
             Err(error) => {
                 let error_response: ErrorResponse = response.json().await?;
-                log::error!("Error getting access token: {}", error_response.message);
-                bail!(error)
+                log::error!("Error getting access token: {}", error);
+                return Err(GigaChatError::HttpError(format!(
+                    "Error getting access token: {}",
+                    error_response.message
+                )));
             }
         };
 
@@ -126,7 +129,10 @@ impl Client {
             Err(error) => {
                 // let error_response: ErrorResponse = response.json().await?;
                 log::error!("Error execute request: {}", error);
-                bail!(error)
+                return Err(GigaChatError::HttpError(format!(
+                    "Error execute request: {}",
+                    error
+                )));
             }
         };
 

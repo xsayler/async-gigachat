@@ -71,4 +71,6 @@ pub mod api;
 pub mod chat;
 pub mod client;
 pub mod config;
+pub mod errors;
 pub mod model;
+pub mod result;

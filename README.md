@@ -1,5 +1,5 @@
-<h1 align="center"> async-gigachat </h1>
-<p align="center"> Async Rust library for GigaChat </p>
+<h1> async-gigachat </h1>
+<p> Async Rust library for GigaChat </p>
 
 ## Overview
 

@@ -1,5 +1,6 @@
 use std::fmt;
 
+use crate::{errors::GigaChatError, result::Result};
 use derive_builder::Builder;
 use log::debug;
 use serde::{Deserialize, Serialize};
@@ -27,11 +28,23 @@ pub struct ChatCompletionRequest {
     pub update_interval: Option<f32>,
 }
 
+impl From<ChatCompletionRequestBuilderError> for GigaChatError {
+    fn from(error: ChatCompletionRequestBuilderError) -> Self {
+        GigaChatError::SystemError(error.to_string())
+    }
+}
+
 #[derive(Builder, Debug, Clone, Serialize, Deserialize)]
 #[builder(setter(into, strip_option))]
 pub struct ChatMessage {
     pub role: Role,
     pub content: String,
+}
+
+impl From<ChatMessageBuilderError> for GigaChatError {
+    fn from(error: ChatMessageBuilderError) -> Self {
+        GigaChatError::SystemError(error.to_string())
+    }
 }
 
 #[derive(Clone, Serialize, Debug, Deserialize)]
@@ -83,7 +96,7 @@ impl Chat {
     pub async fn completion(
         self,
         request: ChatCompletionRequest,
-    ) -> anyhow::Result<ChatCompletionResponse> {
+    ) -> Result<ChatCompletionResponse> {
         debug!("request:\n{}", serde_json::to_string_pretty(&request)?);
 
         let response = self.client.post("/chat/completions", request).await?;

@@ -1,4 +1,4 @@
-use crate::api::{API_BASE_URL, AUTH_URL, SCOPE_CORP, SCOPE_PERS};
+use crate::api::{API_BASE_URL, AUTH_URL, SCOPE_CORPORATE, SCOPE_PERSONAL};
 
 #[derive(Clone)]
 pub struct GigaChatConfig {
@@ -23,7 +23,7 @@ impl Default for GigaChatConfig {
         Self {
             auth_token: std::env::var("GIGACHAT_AUTH_TOKEN")
                 .expect("The environment variable GIGACHAT_AUTH_TOKEN is not set"),
-            scope: std::env::var("GIGACHAT_API_SCOPE").unwrap_or(SCOPE_PERS.into()),
+            scope: std::env::var("GIGACHAT_API_SCOPE").unwrap_or(SCOPE_PERSONAL.into()),
             auth_url: AUTH_URL.to_owned(),
             api_base_url: API_BASE_URL.to_owned(),
         }
@@ -65,11 +65,11 @@ impl GigaChatConfigBuilder {
     }
 
     pub fn with_scope_pers(self) -> Self {
-        self.scope(SCOPE_PERS)
+        self.scope(SCOPE_PERSONAL)
     }
 
     pub fn with_scope_corp(self) -> Self {
-        self.scope(SCOPE_CORP)
+        self.scope(SCOPE_CORPORATE)
     }
 
     pub fn auth_url<S>(mut self, url: S) -> Self
