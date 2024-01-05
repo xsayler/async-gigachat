@@ -1,7 +1,12 @@
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::{
+    pin::Pin,
+    time::{SystemTime, UNIX_EPOCH},
+};
 
+use futures::{stream::StreamExt, Stream};
 use log::debug;
 use reqwest::Request;
+use reqwest_eventsource::{Event, EventSource, RequestBuilderExt};
 use serde::{de::DeserializeOwned, Serialize};
 use uuid::Uuid;
 
@@ -118,6 +123,26 @@ impl Client {
         self.execute(request).await
     }
 
+    pub async fn post_stream<I, O>(
+        mut self,
+        path: &str,
+        body: I,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<O>>>>>
+    where
+        I: Serialize,
+        O: DeserializeOwned + Send + 'static,
+    {
+        let request = self
+            .http_client
+            .post(format!("{}{}", self.config.api_base_url, path))
+            .bearer_auth(self.get_access_token().await?.access_token)
+            .json(&body)
+            .eventsource()
+            .unwrap();
+
+        Ok(self.stream(request).await)
+    }
+
     pub async fn execute<R>(self, request: Request) -> Result<R>
     where
         R: DeserializeOwned,
@@ -143,5 +168,50 @@ impl Client {
         let result: R = serde_json::from_str(&response_text)?;
 
         Ok(result)
+    }
+
+    async fn stream<O>(
+        self,
+        mut event_source: EventSource,
+    ) -> Pin<Box<dyn Stream<Item = Result<O>>>>
+    where
+        O: DeserializeOwned + Send + 'static,
+    {
+        let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
+
+        tokio::spawn(async move {
+            while let Some(event) = event_source.next().await {
+                match event {
+                    Ok(event) => match event {
+                        Event::Open => continue,
+                        Event::Message(message) => {
+                            let data = message.data;
+
+                            if data == "[DONE]" {
+                                break;
+                            }
+
+                            let result: Result<O> = serde_json::from_str(&data)
+                                .map_err(|error| GigaChatError::StreamError(error.to_string()));
+
+                            if let Err(error) = tx.send(result) {
+                                log::error!("Error sending event: {}", error);
+                                break;
+                            }
+                        }
+                    },
+                    Err(error) => {
+                        log::error!("Error getting event: {}", error);
+                        tx.send(Err(GigaChatError::StreamError(error.to_string())))
+                            .unwrap();
+                        break;
+                    }
+                }
+            }
+
+            event_source.close();
+        });
+
+        Box::pin(tokio_stream::wrappers::UnboundedReceiverStream::new(rx))
     }
 }

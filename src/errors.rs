@@ -3,8 +3,10 @@ use std::time::SystemTimeError;
 #[derive(Debug)]
 pub enum GigaChatError {
     SystemError(String),
+    StreamError(String),
     HttpError(String),
-    SerializationError(String),
+    JSONDeserializationError(String),
+    InvalidArgument(String),
 }
 
 impl From<SystemTimeError> for GigaChatError {
@@ -21,7 +23,7 @@ impl From<reqwest::Error> for GigaChatError {
 
 impl From<serde_json::Error> for GigaChatError {
     fn from(error: serde_json::Error) -> Self {
-        GigaChatError::SerializationError(error.to_string())
+        GigaChatError::JSONDeserializationError(error.to_string())
     }
 }
 

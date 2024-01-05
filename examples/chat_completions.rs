@@ -26,12 +26,13 @@ async fn main() -> Result<()> {
         .build()?;
 
     let response = Chat::new(client).completion(request).await?;
+    let choice = response.choices.get(0).unwrap();
 
-    println!("{}: {}", question.role, question.content);
+    println!("{}: {}", question.role.unwrap(), question.content);
     println!(
         "{}: {}",
-        response.choices.get(0).unwrap().message.role,
-        response.choices.get(0).unwrap().message.content
+        choice.message.clone().role.unwrap(),
+        choice.message.content
     );
 
     Ok(())

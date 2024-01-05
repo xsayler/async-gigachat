@@ -6,6 +6,7 @@ use async_gigachat::{
     config::GigaChatConfig,
     result::Result,
 };
+use tokio_stream::StreamExt;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -20,6 +21,8 @@ async fn main() -> Result<()> {
     let mut messages: Vec<ChatMessage> = vec![];
 
     println!("help: type :q to end the chat\n");
+
+    let mut lock = stdout().lock();
 
     loop {
         let mut buffer = String::new();
@@ -45,13 +48,32 @@ async fn main() -> Result<()> {
         let request = ChatCompletionRequestBuilder::default()
             .messages(messages.clone())
             .model("GigaChat:latest")
+            .stream(true)
             .build()?;
 
-        let response = Chat::new(client.clone()).completion(request).await?;
+        let mut stream = Chat::new(client.clone()).completion_stream(request).await?;
 
-        let message = &response.choices.get(0).unwrap().message.content;
+        print!("assistant: ");
+        stdout().flush()?;
 
-        println!("assistant: {}", message);
+        let mut message = String::default();
+
+        while let Some(response) = stream.next().await {
+            match response {
+                Ok(resp) => {
+                    for choice in resp.choices.iter() {
+                        print!("{}", choice.delta.content);
+                        stdout().flush()?;
+                        message = format!("{} {}", message, choice.delta.content);
+                    }
+                }
+                Err(e) => {
+                    let _ = writeln!(lock, "Error: {:?}", e);
+                }
+            };
+        }
+
+        print!("\n");
         stdout().flush()?;
 
         messages.push(

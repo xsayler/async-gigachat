@@ -47,7 +47,7 @@
 //! // Create request using builder pattern
 //! let request = ChatCompletionRequestBuilder::default()
 //!     .messages(vec![ChatMessage {
-//!         role: Role::User,
+//!         role: Some(Role::User),
 //!         content: "Hey, how's it going?".into(),
 //!     }])
 //!     .model("GigaChat:latest")
