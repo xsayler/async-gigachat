@@ -1,8 +1,8 @@
 use crate::api::{API_BASE_URL, AUTH_URL, SCOPE_CORPORATE, SCOPE_PERSONAL};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct GigaChatConfig {
-    pub auth_token: String,
+    pub auth_token: Option<String>,
     pub scope: String,
     pub auth_url: String,
     pub api_base_url: String,
@@ -10,7 +10,13 @@ pub struct GigaChatConfig {
 
 impl GigaChatConfig {
     pub fn new() -> Self {
-        GigaChatConfig::default()
+        Self {
+            auth_token: Some(
+                std::env::var("GIGACHAT_AUTH_TOKEN")
+                    .expect("The environment variable GIGACHAT_AUTH_TOKEN is not set"),
+            ),
+            ..GigaChatConfig::default()
+        }
     }
 
     pub fn builder() -> GigaChatConfigBuilder {
@@ -21,8 +27,7 @@ impl GigaChatConfig {
 impl Default for GigaChatConfig {
     fn default() -> Self {
         Self {
-            auth_token: std::env::var("GIGACHAT_AUTH_TOKEN")
-                .expect("The environment variable GIGACHAT_AUTH_TOKEN is not set"),
+            auth_token: None,
             scope: std::env::var("GIGACHAT_API_SCOPE").unwrap_or(SCOPE_PERSONAL.into()),
             auth_url: AUTH_URL.to_owned(),
             api_base_url: API_BASE_URL.to_owned(),
@@ -92,7 +97,10 @@ impl GigaChatConfigBuilder {
         let config = GigaChatConfig::default();
 
         GigaChatConfig {
-            auth_token: self.auth_token.unwrap_or(config.auth_token),
+            auth_token: match self.auth_token {
+                Some(token) => Some(token),
+                None => config.auth_token,
+            },
             scope: self.scope.unwrap_or(config.scope),
             auth_url: self.auth_url.unwrap_or(AUTH_URL.to_owned()),
             api_base_url: self.api_base_url.unwrap_or(API_BASE_URL.to_owned()),

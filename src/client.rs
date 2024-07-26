@@ -73,7 +73,7 @@ impl Client {
                 reqwest::header::CONTENT_TYPE,
                 "application/x-www-form-urlencoded",
             )
-            .bearer_auth(self.config.auth_token.clone())
+            .bearer_auth(self.config.auth_token.clone().unwrap())
             .body(format!("scope={}", self.config.scope))
             .send()
             .await?;
