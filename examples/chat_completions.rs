@@ -11,7 +11,7 @@ async fn main() -> Result<()> {
 
     tracing_subscriber::fmt::init();
 
-    let config = GigaChatConfig::default();
+    let config = GigaChatConfig::new();
 
     let client: Client = Client::with_config(config);
 
